@@ -22,7 +22,7 @@ using TiltBrush;
 using UnityEditor;
 using UnityEditor.Callbacks;
 using UnityEditor.Build.Reporting;
-#if UNITY_EDITOR_OSX && UNITY_IPHONE
+#if UNITY_EDITOR_OSX && (UNITY_IPHONE || UNITY_VISIONOS)
 using UnityEditor.iOS.Xcode;
 #endif
 using UnityEditor.SceneManagement;
@@ -63,6 +63,7 @@ static class BuildTiltBrush
     // Android Executable
     public static string GuiBuildAndroidExecutableName => GuiBuildAndroidApplicationIdentifier + ".apk";
 
+    public static string kGuiBuildVisionOSExecutableName = kGuiBuildExecutableName + ".app";
     public class TiltBuildOptions
     {
         public bool AutoProfile;
@@ -93,16 +94,18 @@ static class BuildTiltBrush
     const string kMenuPluginOculus = "Open Brush/Build/Plugin: Oculus";
     const string kMenuPluginWave = "Open Brush/Build/Plugin: Wave";
     const string kMenuPluginPico = "Open Brush/Build/Plugin: Pico";
+    const string kMenuPluginVisionOS = "Open Brush/Build/Plugin: Apple visionOS";
     const string kMenuPlatformPref = "Open Brush/Build/Platform";
     const string kMenuPlatformWindows = "Open Brush/Build/Platform: Windows";
     const string kMenuPlatformLinux = "Open Brush/Build/Platform: Linux";
     const string kMenuPlatformOsx = "Open Brush/Build/Platform: OSX";
     const string kMenuPlatformAndroid = "Open Brush/Build/Platform: Android";
+    const string kMenuPlatformVisionOS = "Open Brush/build/Platform: VisionOS";
     const string kMenuDevelopment = "Open Brush/Build/Development";
     const string kMenuMono = "Open Brush/Build/Runtime: Mono";
     const string kMenuIl2cpp = "Open Brush/Build/Runtime: IL2CPP";
     const string kMenuAutoProfile = "Open Brush/Build/Auto Profile";
-
+    
     const string kBuildCopyDir = "BuildCopy";
     private static string[] kBuildDirs = { "Assets", "Packages", "ProjectSettings", "Support" };
 
@@ -127,6 +130,9 @@ static class BuildTiltBrush
             // Pico
             new KeyValuePair<XrSdkMode, BuildTarget>(XrSdkMode.Pico, BuildTarget.Android),
 #endif // PICO_SUPPORTED
+#if VISIONOS_SUPPORTED
+            new KeyValuePair<XrSdkMode, BuildTarget>(XrSdkMode.VisionOS, BuildTarget.VisionOS),
+#endif // VISIONOS_SUPPORTED
         };
 
     static readonly List<CopyRequest> kToCopy = new List<CopyRequest>
@@ -206,7 +212,7 @@ static class BuildTiltBrush
 #endif // OCULUS_SUPPORTED
             Menu.SetChecked(kMenuPluginWave, value == XrSdkMode.Wave);
             Menu.SetChecked(kMenuPluginPico, value == XrSdkMode.Pico);
-
+            Menu.SetChecked(kMenuPluginVisionOS, value == XrSdkMode.VisionOS);
             if (!BuildTargetSupported(value, GuiSelectedBuildTarget))
             {
                 GuiSelectedBuildTarget = kValidSdkTargets.First(x => x.Key == value).Value;
@@ -228,6 +234,7 @@ static class BuildTiltBrush
             Menu.SetChecked(kMenuPlatformLinux, value == BuildTarget.StandaloneLinux64);
             Menu.SetChecked(kMenuPlatformOsx, value == BuildTarget.StandaloneOSX);
             Menu.SetChecked(kMenuPlatformAndroid, value == BuildTarget.Android);
+            Menu.SetChecked(kMenuPlatformVisionOS, value == BuildTarget.VisionOS);
         }
     }
 
@@ -356,6 +363,10 @@ static class BuildTiltBrush
             case BuildTarget.StandaloneOSX:
                 location += "/" + kGuiBuildOsxExecutableName;
                 break;
+            case BuildTarget.VisionOS:
+                location += "/" + kGuiBuildExecutableName;
+                break;
+
             default:
                 throw new BuildFailedException("Unsupported BuildTarget: " + buildTarget.ToString());
         }
@@ -617,6 +628,8 @@ static class BuildTiltBrush
                 return BuildTargetGroup.Android;
             case BuildTarget.iOS:
                 return BuildTargetGroup.iOS;
+            case BuildTarget.VisionOS:
+                return BuildTargetGroup.VisionOS;
             default:
                 throw new ArgumentException("buildTarget");
         }
@@ -941,10 +954,13 @@ static class BuildTiltBrush
             m_prevBundleVersion = PlayerSettings.bundleVersion;
             // https://stackoverflow.com/a/9741724/194921 for more on the meaning/format of this string
             PlayerSettings.bundleVersion = configVersionNumber;
+#if UNITY_VISIONOS
+#else
             if (!string.IsNullOrEmpty(stamp))
             {
                 PlayerSettings.bundleVersion += string.Format("-{0}", stamp);
             }
+#endif
 
 
         }
@@ -1624,7 +1640,7 @@ static class BuildTiltBrush
                     buildDesc += $", {PlayerSettings.Android.targetArchitectures}";
                 }
                 m_buildStatus = buildDesc;
-
+                Debug.Log("Options : " + options);
                 // Start building
                 var thing = BuildPipeline.BuildPlayer(scenes, location, target, options);
                 string error = FormatBuildReport(thing);
@@ -1775,7 +1791,21 @@ static class BuildTiltBrush
             case BuildTarget.StandaloneOSX:
                 looseFilesDest = Path.GetDirectoryName(path);
                 break;
-
+            case BuildTarget.VisionOS:
+                looseFilesDest = null;
+#if UNITY_VISIONOS
+                string pbxPath = path + "/Unity-VisionOS.xcodeproj/project.pbxproj";
+                PBXProject project = new PBXProject();
+                project.ReadFromString(File.ReadAllText(pbxPath));
+                string pbxTarget = project.TargetGuidByName("Unity-VisionOS");
+                project.AddFrameworkToProject(pbxTarget, "Security.framework", false);
+                project.AddFrameworkToProject(pbxTarget, "CoreData.framework", false);
+                project.SetBuildProperty(pbxTarget, "ENABLE_BITCODE", "false");
+                File.WriteAllText(pbxPath, project.WriteToString());
+#else
+                Die(5, "OS X required for building VisionOs target.");
+#endif
+                break;
             default:
                 looseFilesDest = null;
                 break;

@@ -306,7 +306,7 @@ namespace TiltBrush
         void Update()
         {
             //update brush audio
-            if (m_AudioSources.Length > 0)
+            if (m_AudioSources != null && m_AudioSources.Length > 0)
             {
                 //smooth volume and pitch out a bit from frame to frame
                 float fFadeStepUp = m_BrushAudioAdjustSpeedUp * Time.deltaTime;
@@ -334,6 +334,9 @@ namespace TiltBrush
                 {
                     float scaledPressure = Remap(GetPressure(), 0, 1, m_BrushSizeRange.x, m_CurrentBrushSize);
                     m_BrushPressureIndicator.localScale = new Vector3(scaledPressure, scaledPressure, scaledPressure);
+                } else
+                {
+                    Debug.Log("m_BrushPressureIndicator is null");
                 }
             }
         }

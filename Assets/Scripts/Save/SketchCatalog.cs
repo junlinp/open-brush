@@ -48,7 +48,8 @@ namespace TiltBrush
             m_Instance = this;
 
             if (Application.platform == RuntimePlatform.OSXEditor ||
-                Application.platform == RuntimePlatform.OSXPlayer)
+                Application.platform == RuntimePlatform.OSXPlayer ||
+                Application.platform == RuntimePlatform.VisionOS)
             {
                 // force KEvents implementation of FileSystemWatcher
                 // source: https://github.com/mono/mono/blob/master/mcs/class/System/System.IO/FileSystemWatcher.cs
