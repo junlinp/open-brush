@@ -89,7 +89,7 @@ namespace TiltBrush
         public void SetButtonProperties(BrushDescriptor rBrush)
         {
             m_Brush = rBrush;
-
+            Debug.Log("buttonTexture");
             Texture2D buttonTexture = rBrush.m_ButtonTexture;
             if (buttonTexture == null)
             {
@@ -100,6 +100,7 @@ namespace TiltBrush
             }
             m_BrushIconTexture = buttonTexture;
             m_PreviewCubeScript.SetSampleQuadTexture(buttonTexture);
+            Debug.Log("SetButtonTexture");
             SetButtonTexture(buttonTexture);
 
             if (Config.IsExperimental)
@@ -110,14 +111,21 @@ namespace TiltBrush
             {
                 SetDescriptionText(rBrush.Description);
             }
+            Debug.Log("SetDescriptionText");
+            Debug.LogFormat("AudioReactiveIcon is null ? {0}", m_AudioReactiveIcon == null);
+            Debug.LogFormat("AudioReactive is  {0}", rBrush.m_AudioReactive);
+            Debug.LogFormat("VisualizerManager.m_Instance is null? {0}", VisualizerManager.m_Instance == null);
+            Debug.LogFormat("VisualizerManager.m_Instance.VisualsRequested is {0}", VisualizerManager.m_Instance.VisualsRequested);
             m_AudioReactiveIcon.SetActive(rBrush.m_AudioReactive &&
                 VisualizerManager.m_Instance.VisualsRequested);
+            Debug.Log("AudioReactiveIcon");
             // Play standard click sound if brush doesn't have a custom button sound
             m_ButtonHasPressedAudio = (rBrush.m_ButtonAudio == null);
             if (App.Config.m_WasExperimentalAtStartup)
             {
                 m_ExperimentalIcon.SetActive(App.Instance.IsBrushExperimental(rBrush));
             }
+            Debug.Log("ButtonAudio");
         }
 
         override protected void OnDescriptionActivated()

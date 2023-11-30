@@ -1138,7 +1138,8 @@ static class BuildTiltBrush
                     targetXrPluginsRequired = new string[] { "Unity.XR.PXR.PXR_Loader" };
                     break;
                 case XrSdkMode.Zapbox:
-                    targetXrPluginsRequired = new string[] { "Zappar.XR.ZapboxLoader" };
+                    //targetXrPluginsRequired = new string[] { "Zappar.XR.ZapboxLoader" };
+                    targetXrPluginsRequired = new string[] { "UnityEngine.XR.ARKit.ARKitLoader" };
                     break;
                 case XrSdkMode.Monoscopic:
                     targetSettings.InitManagerOnStart = false;

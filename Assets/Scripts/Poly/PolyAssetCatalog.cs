@@ -750,6 +750,7 @@ namespace TiltBrush
 
         public void UpdateCatalog()
         {
+            Debug.Log("For ActiveRequests");
             // Walk backwards so removal doesn't mess up our indexing.
             for (int i = m_ActiveRequests.Count - 1; i >= 0; --i)
             {
@@ -795,7 +796,7 @@ namespace TiltBrush
                     m_NotifyListeners = true;
                 }
             }
-
+            Debug.Log("For ActiveRequests done");
             if (m_RequestLoadQueue.Count > 0 && m_LoadQueue.Count == 0)
             {
                 // Move a single item from "request load" to "load". Too many items on the load queue
@@ -807,10 +808,10 @@ namespace TiltBrush
                     .ToList();
                 m_LoadQueue.Add(toMove);
             }
-
+            Debug.Log("LoadModelsInQueueAsync");
             // Always call this to poll the async loader.
             LoadModelsInQueueAsync();
-
+            Debug.Log("LoadModelsInQueueAsync done");
             // Shout from the hills.
             if (m_NotifyListeners)
             {
@@ -820,6 +821,7 @@ namespace TiltBrush
                 }
                 m_NotifyListeners = false;
             }
+            Debug.Log("NotifyListeners Done");
         }
 
         void LoadModelsInQueueAsync()

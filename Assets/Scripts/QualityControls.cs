@@ -215,6 +215,7 @@ namespace TiltBrush
 
         void Update()
         {
+            return;
             if (!App.Config.IsMobileHardware)
             {
                 return;

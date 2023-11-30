@@ -24,7 +24,7 @@ namespace TiltBrush
     public class BrushController : MonoBehaviour
     {
         static public BrushController m_Instance;
-
+        
         public event Action<Stroke> StrokeSelected;
         public event Action<BrushDescriptor> BrushChanged;
         public event Action BrushSetToDefault;
@@ -64,11 +64,16 @@ namespace TiltBrush
 
         public void SetBrushToDefault()
         {
+            Debug.Log("ActiveBrush to DefaultBrush");
             m_ActiveBrush = BrushCatalog.m_Instance.DefaultBrush;
 
             if (BrushSetToDefault != null)
             {
+                Debug.Log("call BrushSetToDefault Actions");
                 BrushSetToDefault();
+            } else
+            {
+                Debug.Log("BrushSetToDefault is null");
             }
         }
 

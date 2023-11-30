@@ -288,7 +288,6 @@ namespace TiltBrush
         void OnBrushSetToDefault()
         {
             SetPageIndexToDefault();
-
             RefreshButtonSelection();
             RefreshButtonPositions();
         }
@@ -362,6 +361,7 @@ namespace TiltBrush
                 buttonSizeX;
             float translationDistance = -(buttonSizeX + buttonSpacingX) * NUM_COLS;
             float rotationAngle = 90;
+            
             for (int i = 0; i < m_BrushButtons.Length; i++)
             {
                 Vector3 updateVector = m_BrushButtons[i].m_OriginPosition + new Vector3(translationDistance, 0, 0);
@@ -397,8 +397,11 @@ namespace TiltBrush
                 m_BrushButtons[i].transform.localPosition = updatedPosition;
                 m_BrushButtons[i].transform.localRotation = updatedRotation;
             }
+            Debug.Log("Properties Start");
             RefreshButtonProperties();
+            Debug.Log("NavigationButtons Start");
             RefreshNavigationButtons();
+            Debug.Log("NavigationButtons Done");
         }
 
         // Updates the displayed brush on each button based on where it's displayed at.
@@ -440,7 +443,10 @@ namespace TiltBrush
                     if (!m_BrushButtons[i].IsHover())
                     {
                         BrushDescriptor rBrush = m_TagFilteredBrushes[iBrushIndex];
+                        Debug.LogFormat("rBrush is null ? {0}", rBrush == null);
+                        Debug.LogFormat("BrushButtons[{0}] is null ? {1}", i, m_BrushButtons[i] == null);
                         m_BrushButtons[i].SetButtonProperties(rBrush);
+
                         m_BrushButtons[i].SetButtonSelected(rBrush == BrushController.m_Instance.ActiveBrush);
                         m_BrushButtons[i].gameObject.SetActive(true);
                     }
