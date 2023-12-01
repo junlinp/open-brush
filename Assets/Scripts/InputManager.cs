@@ -867,6 +867,10 @@ namespace TiltBrush
 
         public float GetToolSelection()
         {
+            if (App.Config.IsMobileHardware)
+            {
+                return 0.0f;
+            } 
             float fScrollWheel = Mouse.current.scroll.x.ReadValue();
             if (Mathf.Abs(fScrollWheel) > m_InputThreshold)
             {

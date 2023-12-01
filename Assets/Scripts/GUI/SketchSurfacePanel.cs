@@ -204,7 +204,7 @@ namespace TiltBrush
 
         public void EnableSpecificTool(BaseTool.ToolType rType)
         {
-            if (ActiveTool.m_Type == rType)
+            if (ActiveToolType == rType)
             {
                 return;
             }
@@ -304,6 +304,7 @@ namespace TiltBrush
             if (!m_FreePaintMode)
             {
                 int iPrevIndex = m_ActiveToolIndex;
+                Debug.LogFormat("InputManager.m_Instance.GetToolSelection() : {0}", InputManager.m_Instance.GetToolSelection());
                 m_ToolSelectionAggregateValue += InputManager.m_Instance.GetToolSelection();
                 if (m_ToolSelectionAggregateValue > m_ToolSelectionThreshold)
                 {

@@ -634,6 +634,7 @@ namespace TiltBrush
                 {
                     sketch = System.IO.Path.Combine(App.UserSketchPath(), sketch);
                 }
+                Debug.LogFormat("Enqueue {0} TileFile", sketch);
                 m_RequestedTiltFileQueue.Enqueue(sketch);
                 if (Config.m_SdkMode == SdkMode.Ods || Config.OfflineRender)
                 {
@@ -802,19 +803,18 @@ namespace TiltBrush
             }
 #endif
 
-            Debug.Log("Switchstate");
             //look for state change
             if (m_CurrentAppState != m_DesiredAppState)
             {
                 SwitchState();
             }
-            Debug.Log("Switchstate Done");
+            
             if (InputManager.m_Instance.GetCommand(InputManager.SketchCommands.Activate))
             {
                 // kinda heavy-handed, but whatevs
                 InitCursor();
             }
-            Debug.Log("InitCursor Done");
+            
             // Wait for the environment transition to complete before capturing.
             if (m_OdsPivot
                 && !m_OdsPivot.activeInHierarchy
@@ -885,10 +885,10 @@ namespace TiltBrush
                     Debug.Break();
                 }
             }
-            Debug.Log("Catalog.Update");
-            Debug.LogFormat("PolyAssetCatalog is null ? {0}", m_PolyAssetCatalog == null);
+            
+            
             m_PolyAssetCatalog.UpdateCatalog();
-            Debug.Log("UpdateCatalog Done");
+            
 
             Debug.LogFormat("CurrentAppState is {0}", m_CurrentAppState);
             //update state
@@ -900,21 +900,21 @@ namespace TiltBrush
                             && !EnvironmentCatalog.m_Instance.IsLoading
                             && !m_ShaderWarmup.activeInHierarchy)
                         {
-                            Debug.Log("AppAllowsCreation");
+                            
                             if (AppAllowsCreation())
                             {
-                                Debug.Log("BrushController SetDefault");
+                                
                                 BrushController.m_Instance.SetBrushToDefault();
-                                Debug.Log("BrushColor.SetColorToDefault");
+                                
                                 BrushColor.SetColorToDefault();
-                                Debug.Log("Set Done");
+                               
                             }
                             else
                             {
-                                Debug.Log("PointerManager SetBrushForAllPointers");
+                                
                                 PointerManager.m_Instance.SetBrushForAllPointers(BrushCatalog.m_Instance.DefaultBrush);
                             }
-                            Debug.Log("AudioManager enabled");
+                            
                             AudioManager.Enabled = true;
                             SceneSettings.m_Instance.SetDesiredPreset(EnvironmentCatalog.m_Instance.DefaultEnvironment);
 
@@ -955,13 +955,13 @@ namespace TiltBrush
                                     skipStandardIntro = false;
                                 }
                             }
-                            Debug.Log("skipStandardIntro");
+                            
                             if (skipStandardIntro)
                             {
                                 DestroyIntroSketch();
                                 ViewpointScript.m_Instance.FadeToScene(float.MaxValue);
                             }
-                            Debug.Log("All Done");
+                            
                         } else
                         {
                             Debug.LogFormat("AppState : {0}, BrushCatalog is Loaded ? {1}, EnvironmentCatalog is Loaded ? {2}, m_ShaderWarmup.activeInHierarchy is True ? {3}",
@@ -1140,7 +1140,7 @@ namespace TiltBrush
                     }
                     break;
             }
-            Debug.Log("Switch AppState Done");
+            
         }
 
         public void ExitIntroSketch()

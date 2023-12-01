@@ -618,7 +618,12 @@ namespace TiltBrush
             {
                 case SdkMode.UnityXR:
                     // @bill - Won't this depend of the device?
+#if UNITY_IOS || UNITY_VISIONOS
+                    return DoF.None;
+#else
                     return DoF.Six;
+#endif
+
 
                 case SdkMode.Monoscopic:
                     return DoF.Two;
@@ -753,6 +758,12 @@ namespace TiltBrush
             switch (App.Config.m_SdkMode)
             {
                 case SdkMode.UnityXR:
+                    //Debug.LogFormat("Manager.activeLoader : {0}", UnityEngine.XR.Management.XRGeneralSettings.Instance.Manager.activeLoader);
+                    if (UnityEngine.XR.Management.XRGeneralSettings.Instance.Manager.activeLoader is UnityEngine.XR.ARKit.ARKitLoader)
+                    {
+                        //Debug.LogFormat("IsHmdInitialized false");
+                        return false;
+                    }
                     return UnityEngine.XR.Management.XRGeneralSettings.Instance.Manager.activeLoader != null;
                 default:
                     return true;

@@ -194,7 +194,7 @@ namespace TiltBrush
                 return;
             }
 
-#if !UNITY_ANDROID
+#if !(UNITY_ANDROID || UNITY_IOS)
             Camera srcCam = GetComponent<Camera>();
 
             // Store the clear and culling mask to restore after rendering.
@@ -230,7 +230,7 @@ namespace TiltBrush
             m_isRecording = (VideoRecorderUtils.ActiveVideoRecording != null) &&
                 VideoRecorderUtils.ActiveVideoRecording.IsCapturing;
 
-#if UNITY_ANDROID
+#if UNITY_ANDROID || UNITY_IOS
     // TODO:Mike - setting MSAA seems to crash quest when in Vulkan
     
     int msaa = QualityControls.m_Instance.MSAALevel;

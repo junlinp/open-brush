@@ -1544,7 +1544,7 @@ namespace TiltBrush
 
         virtual public void RegisterHighlight()
         {
-#if !UNITY_ANDROID
+#if !(UNITY_ANDROID || UNITY_IOS)
             if (m_HighlightMeshFilters != null)
             {
                 for (int i = 0; i < m_HighlightMeshFilters.Length; i++)
@@ -1553,13 +1553,13 @@ namespace TiltBrush
                 }
             }
 #else
-    m_Highlighted = true;
+            m_Highlighted = true;
 #endif
         }
 
         virtual protected void UnregisterHighlight()
         {
-#if !UNITY_ANDROID
+#if !(UNITY_ANDROID || UNITY_IOS)
             if (m_HighlightMeshFilters != null)
             {
                 for (int i = 0; i < m_HighlightMeshFilters.Length; i++)
@@ -1568,7 +1568,7 @@ namespace TiltBrush
                 }
             }
 #else
-    m_Highlighted = false;
+            m_Highlighted = false;
 #endif
         }
 

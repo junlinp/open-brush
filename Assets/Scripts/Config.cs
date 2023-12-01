@@ -557,7 +557,7 @@ namespace TiltBrush
                     Application.Quit();
                 }
             }
-#elif !UNITY_ANDROID
+#elif !(UNITY_ANDROID || UNITY_IOS)
             try
             {
                 ParseArgs(System.Environment.GetCommandLineArgs());

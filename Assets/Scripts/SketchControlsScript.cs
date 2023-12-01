@@ -1035,6 +1035,7 @@ namespace TiltBrush
                         // Allow for standard input (like Undo / Redo) even when gazing at a panel.
                         if (m_CurrentInputState == InputState.Standard)
                         {
+                            Debug.Log("Gaze Standard Input");
                             UpdateStandardInput();
                         }
                     }
@@ -1049,6 +1050,7 @@ namespace TiltBrush
                         switch (m_CurrentInputState)
                         {
                             case InputState.Standard:
+                                Debug.Log("Non-Gaze Standard Input");
                                 UpdateStandardInput();
                                 break;
                             case InputState.Pan:
@@ -1489,7 +1491,14 @@ namespace TiltBrush
 
             bool hasController = m_ControlsType == ControlsType.SixDofControllers;
             var mouse = Mouse.current;
-
+            Debug.LogFormat("mouse is null ? {0}", mouse == null);
+            Debug.Log("Toggle default tool");
+            Debug.LogFormat("AdvancedModeActive : {0}", m_PanelManager.AdvancedModeActive());
+            Debug.LogFormat("InputManager.m_Instance.GetCommandDown(InputManager.SketchCommands.ToggleDefaultTool) : {0}", InputManager.m_Instance.GetCommandDown(InputManager.SketchCommands.ToggleDefaultTool));
+            Debug.LogFormat("m_SketchSurfacePanel.IsDefaultToolEnabled() : {0}", m_SketchSurfacePanel.IsDefaultToolEnabled());
+            Debug.LogFormat("m_SketchSurfacePanel.ActiveTool.AllowDefaultToolToggle() : {0}", m_SketchSurfacePanel.ActiveTool.AllowDefaultToolToggle());
+            Debug.LogFormat("PointerManager.m_Instance.IsMainPointerCreatingStroke() : {0}", PointerManager.m_Instance.IsMainPointerCreatingStroke());
+            
             // Toggle default tool.
             if (!m_PanelManager.AdvancedModeActive() &&
                 InputManager.m_Instance.GetCommandDown(InputManager.SketchCommands.ToggleDefaultTool) &&
@@ -1498,40 +1507,47 @@ namespace TiltBrush
                 // don't allow tool to change while pointing at panel because there is no visual indication
                 m_CurrentGazeObject == -1)
             {
+                Debug.Log("m_SketchSurfacePanel.EnableDefaultTool();");
                 m_SketchSurfacePanel.EnableDefaultTool();
                 AudioManager.m_Instance.PlayPinCushionSound(true);
             }
             // Pan.
-            else if (!hasController && mouse.rightButton.isPressed)
+            else if (!hasController && mouse != null && mouse.rightButton.isPressed)
             {
+                Debug.Log("Pan");
                 SwitchState(InputState.Pan);
             }
             // Controller lock (this must be before rotate/head lock!).
             else if (!hasController &&
                 InputManager.m_Instance.GetCommand(InputManager.SketchCommands.LockToController))
             {
+                Debug.Log("ControllerLock");
                 SwitchState(InputState.ControllerLock);
             }
             // Rotate.
             else if (!hasController &&
                 InputManager.m_Instance.GetCommand(InputManager.SketchCommands.PivotRotation))
             {
+                Debug.Log("Rotation");
                 SwitchState(InputState.Rotation);
             }
             // Head lock.
             else if (!hasController &&
                 InputManager.m_Instance.GetCommand(InputManager.SketchCommands.LockToHead))
             {
+                Debug.Log("HeadLock");
                 SwitchState(InputState.HeadLock);
             }
             // Push pull.
             else if (!hasController &&
                 InputManager.m_Instance.GetCommand(InputManager.SketchCommands.AltActivate))
             {
+                Debug.Log("PushPull");
                 SwitchState(InputState.PushPull);
             }
             else if (!PointerManager.m_Instance.IsMainPointerCreatingStroke())
             {
+                Debug.Log("PointerManager.m_Instance.IsMainPointerCreatingStroke()");
                 // Reset surface.
                 if (!hasController &&
                     InputManager.m_Instance.GetCommandDown(InputManager.SketchCommands.Reset))
@@ -1587,7 +1603,8 @@ namespace TiltBrush
                     m_SketchSurfacePanel.CheckForToolSelection();
                 }
             }
-
+            
+            Debug.Log("Debug Undo or Redo");
             // Reset undo/redo hold timers.
             if (!InputManager.m_Instance.GetCommand(InputManager.SketchCommands.Undo))
             {
@@ -1597,6 +1614,7 @@ namespace TiltBrush
             {
                 m_RedoHold_Timer = m_UndoRedoHold_DurationBeforeStart;
             }
+            Debug.Log("Profiling End Sample Done");
             UnityEngine.Profiling.Profiler.EndSample();
         }
 
